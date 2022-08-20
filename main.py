@@ -37,9 +37,9 @@ class Scout_Player:
     
     for game in games:
     
-      white_player = game("div", class_="player white")
+      white_player = self.find_name_of_white_player(game)
    
-      player_is_white = self.player in white_player[0].a.text.lower()
+      player_is_white = self.player == white_player
       if player_is_white:
         self.player_color = "White"
        
@@ -70,6 +70,15 @@ class Scout_Player:
 
 
     self.print_output()
+
+  def find_name_of_white_player(self,game):
+    raw_name = game("div", class_="player white")
+    white_player_name = raw_name[0].a.text.lower()
+    white_player_name = white_player_name.split()
+    if len(white_player_name) > 1:
+      white_player_name = white_player_name[1]
+    
+    return white_player_name
 
   def make_game_score(self):
     score = ChessGameScore(player=self.player, color=self.player_color, pgn=self.pgn,result=self.result)
