@@ -1,0 +1,6 @@
+Note, at this point there was a problem with titled players. It's matching the player name, like fins, to get the page. But then in the game score it's listed as im fins. So for now I just check if the entered name is in the white player's name. This could be a problem if fins plays against someone named fins234 for example. Will have to work on that. 
+  Probably like a check where if there is a space in the name, split it at "m " and take the [1] element. That will work, but first ask if a space is in it. Will need to add a fx that takes the name, saves it, and then does that processing. That actually shouldn't be too bad. 
+
+But right now it works with the last 12 games. That's what loads on it's own on the rated page. 
+
+To make this more robust and add more features learn selenium next. 
