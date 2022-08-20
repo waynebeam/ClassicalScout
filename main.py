@@ -20,8 +20,8 @@ class Scout_Player:
   all_games = []
   
   def __init__(self, player_name:str):
-    self.player = player_name
-    self.url = 'https://lichess.org/@/'+self.player+'/rated'
+    self.player = player_name.lower()
+    self.url = f'https://lichess.org/@/{player_name}/rated'
 
 
   def scout(self):
@@ -30,6 +30,7 @@ class Scout_Player:
     html = response.text
     
     soup = BeautifulSoup(html, "html.parser")
+    #print(soup.prettify())
     
     
     games = soup.findAll("article")
@@ -38,7 +39,7 @@ class Scout_Player:
     
       white_player = game("div", class_="player white")
    
-      player_is_white = white_player[0].a.text == self.player
+      player_is_white = self.player in white_player[0].a.text.lower()
       if player_is_white:
         self.player_color = "White"
        
@@ -76,24 +77,47 @@ class Scout_Player:
     return score
 
   def print_output(self):
-    print(f"{self.player} has played:")
-    # print(f'White Games = {len(self.white_games)}')
-    # print(f'Black games = {len(self.black_games)}')
-    # print(f"Drawn games = {len(self.drawn_games)}")
-    # print('As white they have played: ')
-    # for white_game in self.white_games:
-    #  print(f'{white_game.pgn} and {white_game.result}')
-    # print('As black they have played: ')
-    # for black_game in self.black_games:
-    #  print(f'{black_game.pgn} and {black_game.result}')
-    print(len(self.all_games))
+   
+    white_wins = 0
+    white_losses = 0
+    black_wins = 0
+    black_losses = 0
+    white_pgns = []
+    black_pgns = []
     for game in self.all_games:
-      print(f"{game.color} and played {game.pgn} and {game.result}")
-          
+      #print(game)
+      pgn = game.pgn.split("...", 1)
+      pgn = pgn[0].split("3.", 1)
+      result = game.result
+      pgn = pgn[0]+ f"and {result}"
+      if game.color == "White":
+        white_pgns.append(pgn)
+        if game.result == "Win":
+          white_wins += 1
+        elif game.result == "Loss":
+          white_losses += 1
+      elif game.color == "Black":
+        black_pgns.append(pgn)
+        if game.result == "Win":
+          black_wins += 1
+        elif game.result == "Loss":
+          black_losses += 1
+    print(f"In the last {len(self.all_games)} of {self.player}'s games:")
+    print(f"{self.player} had {white_wins+black_wins} wins and {white_losses+black_losses} losses")
+    print(f"as White \n they had {white_wins} wins and {white_losses} losses playing:")
+    for moves in white_pgns:
+      print(moves)
+    print(f"as Black \n they had {black_wins} wins and {black_losses} losses playing:")
+    for moves in black_pgns:
+      print(moves)
 
+def Main():
+  player_name = input("Who would you like to scout on Lichess?: ")
+  scout = Scout_Player(player_name)
+  scout.scout()
 
-test = Scout_Player('waynebeam')
-test.scout()
+if __name__ == "__main__":
+  Main()
 
 
 
