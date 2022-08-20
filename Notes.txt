@@ -4,3 +4,7 @@ Note, at this point there was a problem with titled players. It's matching the p
 But right now it works with the last 12 games. That's what loads on it's own on the rated page. 
 
 To make this more robust and add more features learn selenium next. 
+
+TODO: break main class into smaller functions
+TODO: redo all names
+TODO: add that name processor class
