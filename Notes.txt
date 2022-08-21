@@ -11,3 +11,7 @@ TODO: redo all names
 The idea in line 2 is perfect. It's absolutely infuriating that it won't work. It won't find the space in the string accurately, even tho it works with any other string. But when I check 
 " " in name it doesn't work. I print the name and it's right. I check for "m" and it works. It just won't check for the blank space. But split works so it sees the space. There is literally no reason why it won't work as originally written. The logic is perfectly sound. All tests work. It's only when I check for " " in the name it doesn't work. But any other number of tests and it works exactly as planned exactly as written. It only won't work for that one moment. Google was no help. 
 So I found another way to make it work, but I hate it. I'm so mad that it won't work as it should. It makes no sense. 
+
+Issue: Game in progress -> fixed Just skip that game
+
+Issue: Rated games may be variants. But if we skip all those, we may end up with no games. Same problem as the classical only filter. Because it only loads first 12
