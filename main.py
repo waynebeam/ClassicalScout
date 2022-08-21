@@ -19,6 +19,7 @@ class Scout_Player:
   black_games = []
   drawn_games = []
   all_games = []
+  type_of_games_dict = {}
   type_of_games = ""
   
   
@@ -27,15 +28,24 @@ class Scout_Player:
     self.urls = self.build_url_dict()
     if search_type in self.urls:
       self.url = self.urls[search_type]
+      self.type_of_games = self.type_of_games_dict[search_type]
     else:
-      self.url = self.urls["c"]
+      self.url = self.urls["all"]
+      self.type_of_games_dict["all"]
 
   def build_url_dict(self):
-    urls_dict = {
-    "c": f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical',
-    "classic": f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical',
-    "classical": f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
-    }
+    classical_url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
+    all_games_url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical'
+
+    classical_words = ["c", "classic", "classical"]
+    all_games_words = ["all", "rated", "r"]
+    urls_dict = {}
+    for word in classical_words:
+      urls_dict[word] = classical_url
+      self.type_of_games_dict[word] = "classical"
+    for word in all_games_words:
+      urls_dict[word] = all_games_url
+      self.type_of_games_dict[word] = "rated"
 
     return urls_dict
   
@@ -87,9 +97,7 @@ class Scout_Player:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
   def scout(self):
-    self.type_of_games = "classical"
-    
-
+   
     white_pattern = re.compile(r'\[White "(\w+-*\w*)"')
     pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+')
     result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
@@ -134,7 +142,7 @@ def Main():
   player_name = input("Who would you like to scout on Lichess?: ")
   player_name = player_name.split()
   if len(player_name) == 1:
-    player_name.append("c")
+    player_name.append("all")
 
   scout = Scout_Player(player_name[0], player_name[1])
     
