@@ -15,3 +15,5 @@ So I found another way to make it work, but I hate it. I'm so mad that it won't 
 Issue: Game in progress -> fixed Just skip that game
 
 Issue: Rated games may be variants. But if we skip all those, we may end up with no games. Same problem as the classical only filter. Because it only loads first 12
+
+Add a string to toggle that says like 'last 12 games' vs 'last 12 classical' depending on the type of search

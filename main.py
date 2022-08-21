@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
+import re
 
 @dataclass
 class ChessGameScore:
@@ -18,6 +19,7 @@ class Scout_Player:
   black_games = []
   drawn_games = []
   all_games = []
+  type_of_games = ""
   
   def __init__(self, player_name:str):
     self.player = player_name.lower()
@@ -25,6 +27,7 @@ class Scout_Player:
     # self.url = 'https://lichess.org/api/games/user/Fins?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
 
   def scout(self):
+    self.type_of_games = "rated"
     response = requests.get(self.url)
     html = response.text
     soup = BeautifulSoup(html, "html.parser") 
@@ -102,7 +105,7 @@ class Scout_Player:
             black_wins += 1
           elif game.result == "Loss":
             black_losses += 1
-      print(f"In the last {len(self.all_games)} of {self.player}'s games:")
+      print(f"In the last {len(self.all_games)} of {self.player}'s {self.type_of_games} games:")
       print(f"{self.player} had {white_wins+black_wins} wins and {white_losses+black_losses} losses\n")
       print(f"as White \n they had {white_wins} wins and {white_losses} losses playing:")
       for moves in white_pgns:
@@ -114,20 +117,50 @@ class Scout_Player:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
   def complex_scout(self):
-    url = 'https://lichess.org/api/games/user/waynebeam?tags=true&clocks=false&evals=false&opening=false&max=2&perfType=classical'
+    self.type_of_games = "classical"
+    url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=5&perfType=classical'
 
+    white_pattern = re.compile(r'\[White "(\w+-*\w*)"')
+    pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+ 3\. \w+')
+    result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
+    
     response = requests.get(url)
     data = response.text
-    soup = BeautifulSoup(data, "html.parser")
-    print(soup)
+    games = data.split("[Event")
+    for game in games[1:]:
+      p = white_pattern.search(game).group(1).lower()
+      if p == self.player:
+        self.player_color = "White"
+      else:
+        self.player_color = "Black"
+
+      result = result_pattern.search(game).group(1)
+      if result == "1/2":
+        self.result = "Draw"
+      elif result == "1-0":
+        if self.player_color == "White":
+          self.result = "Win"
+        else:
+          self.result = "Loss"
+      elif result == "0-1":
+        if self.player_color == "Black":
+          self.result = "Win"
+        else:
+          self.result = "Loss"
+      
+      self.pgn = pgn_pattern.search(game).group()
+      self.all_games.append(self.make_game_score())
+
+    self.print_output()
+
+      
+
+      
 
 def Main():
   player_name = input("Who would you like to scout on Lichess?: ")
   scout = Scout_Player(player_name)
-  if player_name != "j":
-    scout.scout()
-  else:
-    scout.complex_scout()
+  scout.complex_scout()
 
 if __name__ == "__main__":
   Main()
