@@ -22,6 +22,7 @@ class Scout_Player:
   def __init__(self, player_name:str):
     self.player = player_name.lower()
     self.url = f'https://lichess.org/@/{player_name}/rated'
+    # self.url = 'https://lichess.org/api/games/user/Fins?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
 
   def scout(self):
     response = requests.get(self.url)
