@@ -17,3 +17,6 @@ Issue: Game in progress -> fixed Just skip that game
 Issue: Rated games may be variants. But if we skip all those, we may end up with no games. Same problem as the classical only filter. Because it only loads first 12
 
 Add a string to toggle that says like 'last 12 games' vs 'last 12 classical' depending on the type of search
+
+
+Maybe this can be expanded to add a word cloud for the openings. So i split the print output out and only use it if it's dunder main. My idea is, if I do that word cloud, I can import this code for the scout class and use it to gather all the same info. The only difference will be in how and where it is printed. 

@@ -21,57 +21,24 @@ class Scout_Player:
   all_games = []
   type_of_games = ""
   
-  def __init__(self, player_name:str):
+  
+  def __init__(self, player_name:str, search_type: str):
     self.player = player_name.lower()
-    self.url = f'https://lichess.org/@/{player_name}/rated'
-    # self.url = 'https://lichess.org/api/games/user/Fins?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
+    self.urls = self.build_url_dict()
+    if search_type in self.urls:
+      self.url = self.urls[search_type]
+    else:
+      self.url = self.urls["c"]
 
-  def scout(self):
-    self.type_of_games = "rated"
-    response = requests.get(self.url)
-    html = response.text
-    soup = BeautifulSoup(html, "html.parser") 
-    games = soup.findAll("article")
-    
-    for game in games:
-      white_player = self.find_name_of_white_player(game)
-      player_is_white = self.player == white_player
-      if player_is_white:
-        self.player_color = "White"
-      else:
-        self.player_color = "Black"
+  def build_url_dict(self):
+    urls_dict = {
+    "c": f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical',
+    "classic": f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical',
+    "classical": f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
+    }
 
-      result_tag = game("div", class_="result")[0].text
-      
-      if "Draw" in result_tag:
-        self.result = "Draw"
-      elif "White is" in result_tag:
-        if player_is_white:
-          self.result = "Win"
-        else:
-          self.result = "Loss"
-      elif "Black is" in result_tag:
-        if not player_is_white:
-          self.result = "Win"
-        else:
-          self.result = "Loss"
-      elif "Playing right now" in result_tag:
-        continue
-      elif "aborted" in result_tag:
-        continue
-        
-      pgn = game("div", class_="pgn")[0].text
-      self.pgn = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+').search(pgn).group()
-      
-      game_score = self.make_game_score()
-      self.all_games.append(game_score)
-      if game_score.color == "White":
-        self.white_games.append(game_score)
-      else:
-        self.black_games.append(game_score)
-
-    
-
+    return urls_dict
+  
   def find_name_of_white_player(self,game):
     raw_name = game("div", class_="player white")
     white_player_name = raw_name[0].a.text.lower()
@@ -119,15 +86,15 @@ class Scout_Player:
     else:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
-  def classical_scout(self):
+  def scout(self):
     self.type_of_games = "classical"
-    url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=12&perfType=classical'
+    
 
     white_pattern = re.compile(r'\[White "(\w+-*\w*)"')
     pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+')
     result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
     
-    response = requests.get(url)
+    response = requests.get(self.url)
     data = response.text
     games = data.split("[Event")
     for game in games[1:]:
@@ -164,18 +131,14 @@ class Scout_Player:
 
 def Main():
   
-  classical_words = ['c', 'classic', 'classical', 'slow']
   player_name = input("Who would you like to scout on Lichess?: ")
   player_name = player_name.split()
-  if len(player_name) > 1:
-    scout = Scout_Player(player_name[0])
-    if player_name[1] in classical_words:
-      scout.classical_scout()
-    else:
-      scout.scout()
-  else:
-    scout = Scout_Player(player_name[0])
-    scout.scout()
+  if len(player_name) == 1:
+    player_name.append("c")
+
+  scout = Scout_Player(player_name[0], player_name[1])
+    
+  scout.scout()
 
   if __name__ == "__main__":
     scout.print_output()
