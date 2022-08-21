@@ -113,14 +113,24 @@ class Scout_Player:
     else:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
+  def complex_scout(self):
+    url = 'https://lichess.org/api/games/user/waynebeam?tags=true&clocks=false&evals=false&opening=false&max=2&perfType=classical'
+
+    response = requests.get(url)
+    data = response.text
+    soup = BeautifulSoup(data, "html.parser")
+    print(soup)
+
 def Main():
   player_name = input("Who would you like to scout on Lichess?: ")
   scout = Scout_Player(player_name)
-  scout.scout()
+  if player_name != "j":
+    scout.scout()
+  else:
+    scout.complex_scout()
 
 if __name__ == "__main__":
   Main()
-
 
 
 
