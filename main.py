@@ -63,10 +63,14 @@ class Scout_Player:
       pgn = game("div", class_="pgn")[0].text
       self.pgn = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+').search(pgn).group()
       
+      game_score = self.make_game_score()
+      self.all_games.append(game_score)
+      if game_score.color == "White":
+        self.white_games.append(game_score)
+      else:
+        self.black_games.append(game_score)
 
-      self.all_games.append(self.make_game_score())
-
-    self.print_output()
+    
 
   def find_name_of_white_player(self,game):
     raw_name = game("div", class_="player white")
@@ -90,23 +94,16 @@ class Scout_Player:
     white_losses = 0
     black_wins = 0
     black_losses = 0
-    white_pgns = []
-    black_pgns = []
+    
     if self.all_games:
       for game in self.all_games:
         #print(game)
-        
-        result = game.result
-        pgn = game.pgn + f" for a {result}"
-
         if game.color == "White":
-          white_pgns.append(pgn)
           if game.result == "Win":
             white_wins += 1
           elif game.result == "Loss":
             white_losses += 1
         elif game.color == "Black":
-          black_pgns.append(pgn)
           if game.result == "Win":
             black_wins += 1
           elif game.result == "Loss":
@@ -114,11 +111,11 @@ class Scout_Player:
       print(f"\nIn the last {len(self.all_games)} of {self.player}'s {self.type_of_games} games:")
       print(f"{self.player} had {white_wins+black_wins} wins and {white_losses+black_losses} losses\n")
       print(f"as White \n they had {white_wins} wins and {white_losses} losses playing:")
-      for moves in white_pgns:
-        print(moves)
+      for game in self.white_games:
+        print(f'{game.pgn} for a {game.result}')
       print(f"\nas Black \n they had {black_wins} wins and {black_losses} losses playing:")
-      for moves in black_pgns:
-        print(moves)
+      for game in self.black_games:
+        print(f'{game.pgn} for a {game.result}')
     else:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
@@ -155,12 +152,18 @@ class Scout_Player:
           self.result = "Loss"
       
       self.pgn = pgn_pattern.search(game).group()
-      self.all_games.append(self.make_game_score())
+      game_score = self.make_game_score()
+      self.all_games.append(game_score)
+      if game_score.color == "White":
+        self.white_games.append(game_score)
+      else:
+        self.black_games.append(game_score)
 
-    self.print_output()
+    
 
 
 def Main():
+  
   classical_words = ['c', 'classic', 'classical', 'slow']
   player_name = input("Who would you like to scout on Lichess?: ")
   player_name = player_name.split()
@@ -174,6 +177,9 @@ def Main():
     scout = Scout_Player(player_name[0])
     scout.scout()
 
+  if __name__ == "__main__":
+    scout.print_output()
+    
 if __name__ == "__main__":
   Main()
 
