@@ -40,7 +40,7 @@ class Scout_Player:
         self.player_color = "White"
       else:
         self.player_color = "Black"
-      self.pgn = game("div", class_="pgn")[0].text
+
       result_tag = game("div", class_="result")[0].text
       
       if "Draw" in result_tag:
@@ -57,6 +57,12 @@ class Scout_Player:
           self.result = "Loss"
       elif "Playing right now" in result_tag:
         continue
+      elif "aborted" in result_tag:
+        continue
+        
+      pgn = game("div", class_="pgn")[0].text
+      self.pgn = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+').search(pgn).group()
+      
 
       self.all_games.append(self.make_game_score())
 
@@ -89,10 +95,10 @@ class Scout_Player:
     if self.all_games:
       for game in self.all_games:
         #print(game)
-        pgn = game.pgn.split("...", 1)
-        pgn = pgn[0].split("3.", 1)
+        
         result = game.result
-        pgn = pgn[0]+ f"and {result}"
+        pgn = game.pgn + f" for a {result}"
+
         if game.color == "White":
           white_pgns.append(pgn)
           if game.result == "Win":
@@ -105,23 +111,23 @@ class Scout_Player:
             black_wins += 1
           elif game.result == "Loss":
             black_losses += 1
-      print(f"In the last {len(self.all_games)} of {self.player}'s {self.type_of_games} games:")
+      print(f"\nIn the last {len(self.all_games)} of {self.player}'s {self.type_of_games} games:")
       print(f"{self.player} had {white_wins+black_wins} wins and {white_losses+black_losses} losses\n")
       print(f"as White \n they had {white_wins} wins and {white_losses} losses playing:")
       for moves in white_pgns:
         print(moves)
-      print(f"as Black \n they had {black_wins} wins and {black_losses} losses playing:")
+      print(f"\nas Black \n they had {black_wins} wins and {black_losses} losses playing:")
       for moves in black_pgns:
         print(moves)
     else:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
-  def complex_scout(self):
+  def classical_scout(self):
     self.type_of_games = "classical"
-    url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=5&perfType=classical'
+    url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=12&perfType=classical'
 
     white_pattern = re.compile(r'\[White "(\w+-*\w*)"')
-    pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+ 3\. \w+')
+    pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+')
     result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
     
     response = requests.get(url)
@@ -153,14 +159,20 @@ class Scout_Player:
 
     self.print_output()
 
-      
-
-      
 
 def Main():
+  classical_words = ['c', 'classic', 'classical', 'slow']
   player_name = input("Who would you like to scout on Lichess?: ")
-  scout = Scout_Player(player_name)
-  scout.complex_scout()
+  player_name = player_name.split()
+  if len(player_name) > 1:
+    scout = Scout_Player(player_name[0])
+    if player_name[1] in classical_words:
+      scout.classical_scout()
+    else:
+      scout.scout()
+  else:
+    scout = Scout_Player(player_name[0])
+    scout.scout()
 
 if __name__ == "__main__":
   Main()
