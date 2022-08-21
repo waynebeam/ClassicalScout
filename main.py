@@ -51,6 +51,8 @@ class Scout_Player:
           self.result = "Win"
         else:
           self.result = "Loss"
+      elif "Playing right now" in result_tag:
+        continue
 
       self.all_games.append(self.make_game_score())
 
