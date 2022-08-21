@@ -34,11 +34,11 @@ class Scout_Player:
       self.type_of_games_dict["all"]
 
   def build_url_dict(self):
-    classical_url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
-    all_games_url = f'https://lichess.org/api/games/user/{self.player}?tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical'
+    classical_url = f'https://lichess.org/api/games/user/{self.player}?rated=&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
+    all_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical'
 
-    classical_words = ["c", "classic", "classical"]
-    all_games_words = ["all", "rated", "r"]
+    classical_words = ["c", "classic", "classical", "long", "slow"]
+    all_games_words = ["all"]
     urls_dict = {}
     for word in classical_words:
       urls_dict[word] = classical_url
