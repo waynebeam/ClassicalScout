@@ -23,3 +23,8 @@ Maybe this can be expanded to add a word cloud for the openings. So i split the 
 
 Just took out all the Beautiful Soup stuff. It was a good learning experience, and I'm glad to be familiar with it now. There are definitely applications for that. 
 But in this program I just don't need it. Regex is really what I was looking for combined with the very good lichess games api. 
+
+Some Ideas:
+1. Take the urls and put them in a plain text file. The build_urls_dict will just take that simple file and load it, then will a regex check for the start, like "classical_string=" and then take the whole rest (which is the url). That could keep that low level implementation out of the class. And no matter how many urls I add they are in a place and not mucking up the look of the main code
+2. take the Scout class and put it in a Scout.py file that is imported into main. Is it that easy, and if so would that be better to isolate each of those things into a module? Just to stay separate and clean? The issue may be that then, like the data class I made for chess score has to be imported into each file. Do I really wanted to jsut keep adding import statements as I move these things around? Is that better?
+3. Add a "fast, blitz, quick" option that gives the blitz and bullet games. Why not? Rated is all. Classical. Blitz. Basically fast, slow, or all are the major categories. 
