@@ -2,13 +2,19 @@ import requests
 from dataclasses import dataclass
 import re
 
-@dataclass
-class ChessGameScore:
-  player: str
-  color: str
-  pgn: str
-  result: str
+def Main():
+  
+  player_name = input("Who would you like to scout on Lichess?: ")
+  player_name = player_name.split()
+  if len(player_name) == 1:
+    player_name.append("all")
 
+  scout = Scout_Player(player_name[0], player_name[1])
+    
+  scout.scout()
+
+  if __name__ == "__main__":
+    scout.print_output()
 
 class Scout_Player:
   player_color: str
@@ -20,7 +26,6 @@ class Scout_Player:
   all_games = []
   type_of_games_dict = {}
   type_of_games = ""
-  
   
   def __init__(self, player_name:str, search_type: str):
     self.player = player_name.lower()
@@ -47,18 +52,59 @@ class Scout_Player:
       self.type_of_games_dict[word] = "rated"
 
     return urls_dict
-  
-  def find_name_of_white_player(self,game):
-    raw_name = game("div", class_="player white")
-    white_player_name = raw_name[0].a.text.lower()
-    white_player_name = white_player_name.split()
-    if len(white_player_name) > 1:
-      white_player_name = white_player_name[1]
-    else: 
-      white_player_name = white_player_name[0]
     
-    return white_player_name
+  def scout(self):
+   
+    white_pattern = re.compile(r'\[White "(\w+-*\w*)"')
+    result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
+    pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+')
 
+    data = self.download_data()
+    games = self.split_data_into_games(data)
+    
+    for game in games[1:]:     
+      self.set_player_color(game,white_pattern)
+      self.set_result(game,result_pattern)
+      self.pgn = pgn_pattern.search(game).group()
+      game_score = self.make_game_score()
+      self.all_games.append(game_score)
+      if game_score.color == "White":
+        self.white_games.append(game_score)
+      else:
+        self.black_games.append(game_score)
+    
+
+  def download_data(self):
+    response = requests.get(self.url)
+    data = response.text
+    return data
+
+  def split_data_into_games(self,data):
+    games = data.split("[Event")
+    return games  
+
+  def set_player_color(self, game, pattern):
+    p = pattern.search(game).group(1).lower()
+    if p == self.player:
+      self.player_color = "White"
+    else:
+      self.player_color = "Black"
+
+  def set_result(self, game, pattern):
+    result = pattern.search(game).group(1)
+    if result == "1/2":
+      self.result = "Draw"
+    elif result == "1-0":
+      if self.player_color == "White":
+        self.result = "Win"
+      else:
+        self.result = "Loss"
+    elif result == "0-1":
+      if self.player_color == "Black":
+        self.result = "Win"
+      else:
+        self.result = "Loss"
+      
   def make_game_score(self):
     score = ChessGameScore(player=self.player, color=self.player_color, pgn=self.pgn,result=self.result)
 
@@ -95,61 +141,15 @@ class Scout_Player:
     else:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
 
-  def scout(self):
-   
-    white_pattern = re.compile(r'\[White "(\w+-*\w*)"')
-    pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+')
-    result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
-    
-    response = requests.get(self.url)
-    data = response.text
-    games = data.split("[Event")
-    for game in games[1:]:
-      p = white_pattern.search(game).group(1).lower()
-      if p == self.player:
-        self.player_color = "White"
-      else:
-        self.player_color = "Black"
 
-      result = result_pattern.search(game).group(1)
-      if result == "1/2":
-        self.result = "Draw"
-      elif result == "1-0":
-        if self.player_color == "White":
-          self.result = "Win"
-        else:
-          self.result = "Loss"
-      elif result == "0-1":
-        if self.player_color == "Black":
-          self.result = "Win"
-        else:
-          self.result = "Loss"
-      
-      self.pgn = pgn_pattern.search(game).group()
-      game_score = self.make_game_score()
-      self.all_games.append(game_score)
-      if game_score.color == "White":
-        self.white_games.append(game_score)
-      else:
-        self.black_games.append(game_score)
-
-    
+@dataclass
+class ChessGameScore:
+  player: str
+  color: str
+  pgn: str
+  result: str
 
 
-def Main():
-  
-  player_name = input("Who would you like to scout on Lichess?: ")
-  player_name = player_name.split()
-  if len(player_name) == 1:
-    player_name.append("all")
-
-  scout = Scout_Player(player_name[0], player_name[1])
-    
-  scout.scout()
-
-  if __name__ == "__main__":
-    scout.print_output()
-    
 if __name__ == "__main__":
   Main()
 
