@@ -3,17 +3,17 @@ import requests
 import re
 
 class Scout:
-  player_color: str
-  result: str
-  pgn: str
-  white_games = []
-  black_games = []
-  all_games = []
-  type_of_games_dict = {}
-  type_of_games = ""
-  urls_dict = {}
   
   def __init__(self, player_name:str, search_type: str):
+    self.player_color: str
+    self.result: str
+    self.pgn: str
+    self.white_games = []
+    self.black_games = []
+    self.all_games = []
+    self.type_of_games_dict = {}
+    self.type_of_games = ""
+    self.urls_dict = {}
     self.player = player_name.lower()
     self.prepare_url_and_type_dicts()
     if search_type in self.urls_dict:
@@ -139,6 +139,8 @@ class Scout:
         print(f'{game.pgn} for a {game.result}')
     else:
       print(f"{self.player} hasn't played any games... or doesn't exist yet")
+
+    print("\n")
 
 
 @dataclass
