@@ -20,8 +20,8 @@ class Scout:
       self.url = self.urls_dict[search_type]
       self.type_of_games = self.type_of_games_dict[search_type]
     else:
-      self.url = self.urls_dict["all"]
-      self.type_of_games_dict["all"]
+      self.url = self.urls_dict["rated"]
+      self.type_of_games = self.type_of_games_dict["rated"]
 
   
   def prepare_url_and_type_dicts(self):
