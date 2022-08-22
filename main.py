@@ -15,8 +15,6 @@ def Main():
     scout.print_output()
 
 
-
-
 if __name__ == "__main__":
   Main()
 

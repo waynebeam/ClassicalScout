@@ -26,5 +26,10 @@ But in this program I just don't need it. Regex is really what I was looking for
 
 Some Ideas:
 1. Take the urls and put them in a plain text file. The build_urls_dict will just take that simple file and load it, then will a regex check for the start, like "classical_string=" and then take the whole rest (which is the url). That could keep that low level implementation out of the class. And no matter how many urls I add they are in a place and not mucking up the look of the main code
+
+^^tried this and had some problems.  but i figured it out better now. need to leave a stub for the username and sub it out. for player.name
+^^okay this worked now and is implemented. But I feel like it can be cleaned up. The last problem I'm having that's stopping me from only have 2 places to change to add a new url (instead of 3) is that when I loop through the strings with a quick for loop, it doesn't modify the original string, it just creates a new one. Will keep thinking about this. 
+
 2. take the Scout class and put it in a Scout.py file that is imported into main. Is it that easy, and if so would that be better to isolate each of those things into a module? Just to stay separate and clean? The issue may be that then, like the data class I made for chess score has to be imported into each file. Do I really wanted to jsut keep adding import statements as I move these things around? Is that better?
 3. Add a "fast, blitz, quick" option that gives the blitz and bullet games. Why not? Rated is all. Classical. Blitz. Basically fast, slow, or all are the major categories. 
+4. help file. chrck for it. loop the main and print it out

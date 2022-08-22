@@ -8,7 +8,6 @@ class Scout:
   pgn: str
   white_games = []
   black_games = []
-  drawn_games = []
   all_games = []
   type_of_games_dict = {}
   type_of_games = ""
@@ -24,11 +23,21 @@ class Scout:
       self.url = self.urls_dict["all"]
       self.type_of_games_dict["all"]
 
+  
   def prepare_url_and_type_dicts(self):
-    classical_url = f'https://lichess.org/api/games/user/{self.player}?rated=&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
-    all_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical'
-    fast_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=bullet%2Cblitz%2Crapid'
 
+    raw_url_data = load_urls_from_file()
+    classical_url = re.search(r'classical_url = (.+)\b', raw_url_data).group(1)
+    all_games_url = re.search(r'all_games_url = (.+)\b', raw_url_data).group(1)
+    fast_games_url = re.search(r'fast_games_url = (.+)\b', raw_url_data).group(1)
+
+    classical_url = re.sub("PLAYERGOESHERE", self.player, classical_url)
+    all_games_url = re.sub("PLAYERGOESHERE", self.player, all_games_url)
+    fast_games_url = re.sub("PLAYERGOESHERE", self.player, fast_games_url)
+
+
+
+    
     classical_words = ['classical',"c", "classic", "long", "slow"]
     all_games_words = ["rated","all"]
     fast_games_words = ['fast', 'rapid', 'blitz', 'quick', 'speed']
@@ -138,3 +147,8 @@ class ChessGameScore:
   color: str
   pgn: str
   result: str
+
+def load_urls_from_file():
+    with open("urls.txt", "r") as f:
+      data = f.read()
+    return data

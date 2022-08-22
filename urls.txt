@@ -1,0 +1,3 @@
+classical_url = https://lichess.org/api/games/user/PLAYERGOESHERE?rated=&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical
+    all_games_url = https://lichess.org/api/games/user/PLAYERGOESHERE?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical
+    fast_games_url = https://lichess.org/api/games/user/PLAYERGOESHERE?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=bullet%2Cblitz%2Crapid
