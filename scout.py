@@ -26,9 +26,11 @@ class Scout:
   def build_url_dict(self):
     classical_url = f'https://lichess.org/api/games/user/{self.player}?rated=&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
     all_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical'
+    fast_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=bullet%2Cblitz%2Crapid'
 
     classical_words = ["c", "classic", "classical", "long", "slow"]
     all_games_words = ["all"]
+    fast_games_words = ['fast', 'rapid', 'blitz', 'quick', 'speed']
     urls_dict = {}
     for word in classical_words:
       urls_dict[word] = classical_url
@@ -36,6 +38,9 @@ class Scout:
     for word in all_games_words:
       urls_dict[word] = all_games_url
       self.type_of_games_dict[word] = "rated"
+    for word in fast_games_words:
+      urls_dict[word] = fast_games_url
+      self.type_of_games_dict[word] = "fast"
 
     return urls_dict
     
