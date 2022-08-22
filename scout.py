@@ -12,37 +12,37 @@ class Scout:
   all_games = []
   type_of_games_dict = {}
   type_of_games = ""
+  urls_dict = {}
   
   def __init__(self, player_name:str, search_type: str):
     self.player = player_name.lower()
-    self.urls = self.build_url_dict()
-    if search_type in self.urls:
-      self.url = self.urls[search_type]
+    self.prepare_url_and_type_dicts()
+    if search_type in self.urls_dict:
+      self.url = self.urls_dict[search_type]
       self.type_of_games = self.type_of_games_dict[search_type]
     else:
-      self.url = self.urls["all"]
+      self.url = self.urls_dict["all"]
       self.type_of_games_dict["all"]
 
-  def build_url_dict(self):
+  def prepare_url_and_type_dicts(self):
     classical_url = f'https://lichess.org/api/games/user/{self.player}?rated=&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=classical'
     all_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=ultraBullet%2Cbullet%2Cblitz%2Crapid%2Cclassical'
     fast_games_url = f'https://lichess.org/api/games/user/{self.player}?rated=true&tags=true&clocks=false&evals=false&opening=false&max=20&perfType=bullet%2Cblitz%2Crapid'
 
-    classical_words = ["c", "classic", "classical", "long", "slow"]
-    all_games_words = ["all"]
+    classical_words = ['classical',"c", "classic", "long", "slow"]
+    all_games_words = ["rated","all"]
     fast_games_words = ['fast', 'rapid', 'blitz', 'quick', 'speed']
-    urls_dict = {}
-    for word in classical_words:
-      urls_dict[word] = classical_url
-      self.type_of_games_dict[word] = "classical"
-    for word in all_games_words:
-      urls_dict[word] = all_games_url
-      self.type_of_games_dict[word] = "rated"
-    for word in fast_games_words:
-      urls_dict[word] = fast_games_url
-      self.type_of_games_dict[word] = "fast"
+    
+    self.add_to_url_and_type_dicts(classical_words,classical_url)
+    self.add_to_url_and_type_dicts(all_games_words,all_games_url)
+    self.add_to_url_and_type_dicts(fast_games_words,fast_games_url)
 
-    return urls_dict
+
+
+  def add_to_url_and_type_dicts(self,word_list,url):
+    for word in word_list:
+      self.urls_dict[word] = url
+      self.type_of_games_dict[word] = word_list[0]
     
   def scout(self):
    
@@ -50,7 +50,7 @@ class Scout:
     result_pattern = re.compile(r'\[Result "(\d(-|/)\d)')
     pgn_pattern = re.compile(r'1\. \w+ \w+ 2\. \w+ \w+')
 
-    data = self.download_data()
+    data = self.download_data_from_lichess()
     games = self.split_data_into_games(data)
     
     for game in games[1:]:     
@@ -65,7 +65,7 @@ class Scout:
         self.black_games.append(game_score)
     
 
-  def download_data(self):
+  def download_data_from_lichess(self):
     response = requests.get(self.url)
     data = response.text
     return data
@@ -110,7 +110,6 @@ class Scout:
     
     if self.all_games:
       for game in self.all_games:
-        #print(game)
         if game.color == "White":
           if game.result == "Win":
             white_wins += 1
