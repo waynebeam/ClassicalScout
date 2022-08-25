@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import requests
+from requests.exceptions import Timeout
 import re
 
 class Scout:
@@ -27,24 +28,25 @@ class Scout:
   def prepare_url_and_type_dicts(self):
 
     raw_url_data = load_urls_from_file()
-    classical_url = re.search(r'classical_url = (.+)\b', raw_url_data).group(1)
-    all_games_url = re.search(r'all_games_url = (.+)\b', raw_url_data).group(1)
-    fast_games_url = re.search(r'fast_games_url = (.+)\b', raw_url_data).group(1)
-
-    classical_url = re.sub("PLAYERGOESHERE", self.player, classical_url)
-    all_games_url = re.sub("PLAYERGOESHERE", self.player, all_games_url)
-    fast_games_url = re.sub("PLAYERGOESHERE", self.player, fast_games_url)
-
-
-
-    
-    classical_words = ['classical',"c", "classic", "long", "slow"]
-    all_games_words = ["rated","all"]
-    fast_games_words = ['fast', 'rapid', 'blitz', 'quick', 'speed']
-    
-    self.add_to_url_and_type_dicts(classical_words,classical_url)
-    self.add_to_url_and_type_dicts(all_games_words,all_games_url)
-    self.add_to_url_and_type_dicts(fast_games_words,fast_games_url)
+    if raw_url_data:
+      classical_url = re.search(r'classical_url = (.+)\b', raw_url_data).group(1)
+      all_games_url = re.search(r'all_games_url = (.+)\b', raw_url_data).group(1)
+      fast_games_url = re.search(r'fast_games_url = (.+)\b', raw_url_data).group(1)
+  
+      classical_url = re.sub("PLAYERGOESHERE", self.player, classical_url)
+      all_games_url = re.sub("PLAYERGOESHERE", self.player, all_games_url)
+      fast_games_url = re.sub("PLAYERGOESHERE", self.player, fast_games_url)
+  
+  
+  
+      
+      classical_words = ['classical',"c", "classic", "long", "slow"]
+      all_games_words = ["rated","all"]
+      fast_games_words = ['fast', 'rapid', 'blitz', 'quick', 'speed']
+      
+      self.add_to_url_and_type_dicts(classical_words,classical_url)
+      self.add_to_url_and_type_dicts(all_games_words,all_games_url)
+      self.add_to_url_and_type_dicts(fast_games_words,fast_games_url)
 
 
 
@@ -75,9 +77,13 @@ class Scout:
     
 
   def download_data_from_lichess(self):
-    response = requests.get(self.url)
-    data = response.text
-    return data
+    try:
+      response = requests.get(self.url, timeout=2)
+      data = response.text
+      return data
+    except Timeout:
+      print("No reponse for that user")
+      return None
 
   def split_data_into_games(self,data):
     games = data.split("[Event")

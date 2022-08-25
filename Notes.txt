@@ -33,3 +33,7 @@ Some Ideas:
 2. take the Scout class and put it in a Scout.py file that is imported into main. Is it that easy, and if so would that be better to isolate each of those things into a module? Just to stay separate and clean? The issue may be that then, like the data class I made for chess score has to be imported into each file. Do I really wanted to jsut keep adding import statements as I move these things around? Is that better?
 3. Add a "fast, blitz, quick" option that gives the blitz and bullet games. Why not? Rated is all. Classical. Blitz. Basically fast, slow, or all are the major categories. 
 4. help file. chrck for it. loop the main and print it out
+
+ maybe a lambda function can take the lop and modeler the sounder for me in one go, since its a return?
+
+Scout does all the "work", searching and compiling. But maybe there should be another class that gathers the data. Scout can make this object and hold on to it. Then the data gathered can be given to obj.pgn etc. At the end of the loop, we can call obj.make games list. Then scout.obj can be the source of the data printed. This will keep some of the instance variables out of scout. Then we separate data holding from data processing. 
