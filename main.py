@@ -13,7 +13,7 @@ def Main():
       scout.scout()
     
       if __name__ == "__main__":
-        scout.print_output()
+        scout.scouting_report.print_output()
     else:
       print_help()
 
